@@ -21,18 +21,18 @@ st.markdown("""
     </div>
     """, unsafe_allow_html=True)
 
-# --- 2. CONFIGURAÇÃO DA IA (Solução Definitiva para Erro 404) ---
+# --- 2. CONFIGURAÇÃO DA IA (Segurança via Secrets) ---
 try:
+    # Este comando busca a chave que você salvou no painel do Streamlit
     api_key = st.secrets["GEMINI_API_KEY"]
     genai.configure(api_key=api_key)
     
     # Busca automática do modelo disponível para evitar erro 404
     models = [m.name for m in genai.list_models() if 'generateContent' in m.supported_generation_methods]
-    # Prioriza o flash 1.5, se não houver, pega o primeiro disponível
     model_name = 'models/gemini-1.5-flash' if 'models/gemini-1.5-flash' in models else models[0]
     model = genai.GenerativeModel(model_name)
 except Exception as e:
-    st.error("Configure sua GEMINI_API_KEY nos Secrets do Streamlit Cloud.")
+    st.error("Erro: Verifique se a GEMINI_API_KEY está salva corretamente nos Secrets do Streamlit.")
 
 # --- 3. LINKS INEGOCIÁVEIS (Contatos Oficiais) ---
 WHATSAPP = "https://wa.me/5511948021428"
@@ -50,15 +50,14 @@ LINK_SHOES = "https://www.shopintegra.com.br/catalogo/luhvee-stores-shoes"
 
 # --- 5. INTERFACE DE USUÁRIO ---
 st.markdown("### 📝 Informações do Produto")
-nome = st.text_input("Nome do Produto/Achadinho")
-preco = st.text_input("Preço (R$)")
-detalhes = st.text_area("Destaques (Ex: Retira até os mais difíceis)")
+nome = st.text_input("Nome do Produto/Achadinho", placeholder="Ex: Tênis Premium")
+preco = st.text_input("Preço (R$)", placeholder="Ex: 199.90")
+detalhes = st.text_area("Destaques (Gatilhos extras)", placeholder="Ex: Últimas unidades, frete grátis")
 
-st.markdown("### 🔗 Selecione onde Postar")
+st.markdown("### 🔗 Selecione os Links para esta Postagem")
 selecionados = []
 
-# Divisão por categorias solicitada
-st.write("**🎁 Achadinhos**")
+st.write("**🎁 Seção Achadinhos**")
 col1, col2, col3 = st.columns(3)
 with col1:
     if st.checkbox("Mercado Livre"): selecionados.append(("🔹 Mercado Livre", LINKS_ACHADINHOS["Mercado Livre"]))
@@ -67,7 +66,7 @@ with col2:
 with col3:
     if st.checkbox("Shein"): selecionados.append(("👠 Shein", LINKS_ACHADINHOS["Shein"]))
 
-st.write("**👟 Especializado**")
+st.write("**👟 Seção Especializada**")
 col4, col5 = st.columns(2)
 with col4:
     if st.checkbox("Shoes (Shopintegra)"): selecionados.append(("👟 Luhvee Shoes", LINK_SHOES))
@@ -77,24 +76,27 @@ with col5:
 # --- 6. GERAÇÃO DA MENSAGEM ---
 if st.button("🚀 GERAR MENSAGEM COMPLETA"):
     if nome and preco:
-        with st.spinner('Gerando copy persuasiva...'):
+        with st.spinner('A IA está preparando sua oferta...'):
             try:
-                prompt = f"Atue como vendedor da Luhvee Stores. Crie uma copy curta e urgente para: {nome}. Preço: R$ {preco}. Gatilhos: Escassez e Urgência. Detalhes: {detalhes}"
+                # Prompt estratégico para neuro-vendas
+                prompt = f"Atue como vendedor da Luhvee Stores. Crie uma copy curta e urgente para: {nome}. Preço: R$ {preco}. Detalhes: {detalhes}. Use gatilhos de escassez."
                 response = model.generate_content(prompt)
                 
+                # Montagem do bloco de links de venda escolhidos
                 bloco_links = "\n\n📌 **ADQUIRA AQUI:**\n"
                 for label, url in selecionados:
                     bloco_links += f"{label}: {url}\n"
                 
+                # Rodapé Inegociável (WhatsApp, Instagram e Grupo VIP)
                 rodape = f"""
 ---
 🔥 **PARTICIPE DO GRUPO VIP:** {GRUPO_VIP}
 📱 **WhatsApp:** {WHATSAPP}
 📸 **Instagram:** {INSTAGRAM}
 """
-                st.success("Tudo pronto!")
-                st.text_area("Copie e poste:", response.text + bloco_links + rodape, height=450)
+                st.success("Cópia gerada com sucesso!")
+                st.text_area("Pronto para copiar e colar:", response.text + bloco_links + rodape, height=450)
             except Exception as e:
-                st.error(f"Erro ao gerar: {e}")
+                st.error(f"Erro ao gerar conteúdo: {e}")
     else:
-        st.warning("Preencha o nome e o preço!")
+        st.warning("Preencha o nome e o preço para continuar.")
