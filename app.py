@@ -1,7 +1,7 @@
 import streamlit as st
 import google.generativeai as genai
 
-# 1. IDENTIDADE VISUAL (Luhvees)
+# --- 1. IDENTIDADE VISUAL (Luhvees) ---
 st.set_page_config(page_title="Luhvee Stores Pro", layout="centered")
 
 st.markdown("""
@@ -21,20 +21,26 @@ st.markdown("""
     </div>
     """, unsafe_allow_html=True)
 
-# 2. CONFIGURAÇÃO DA IA (Segurança via Secrets)
+# --- 2. CONFIGURAÇÃO DA IA (Solução Definitiva para Erro 404) ---
 try:
     api_key = st.secrets["GEMINI_API_KEY"]
     genai.configure(api_key=api_key)
-    model = genai.GenerativeModel('models/gemini-1.5-flash')
+    
+    # Busca automática do modelo disponível para evitar erro 404
+    models = [m.name for m in genai.list_models() if 'generateContent' in m.supported_generation_methods]
+    # Prioriza o flash 1.5, se não houver, pega o primeiro disponível
+    model_name = 'models/gemini-1.5-flash' if 'models/gemini-1.5-flash' in models else models[0]
+    model = genai.GenerativeModel(model_name)
 except Exception as e:
     st.error("Configure sua GEMINI_API_KEY nos Secrets do Streamlit Cloud.")
 
-# 3. LINKS INEGOCIÁVEIS (Contatos Oficiais)
+# --- 3. LINKS INEGOCIÁVEIS (Contatos Oficiais) ---
 WHATSAPP = "https://wa.me/5511948021428"
 INSTAGRAM = "https://instagram.com/luhveestore"
 GRUPO_VIP = "https://chat.whatsapp.com/IBneTrHJemMLla4wzU8Wbj"
+HUB_LINKS = "https://links-luhveestore.streamlit.app/"
 
-# 4. LINKS DE VENDA (Categorias)
+# --- 4. LINKS DE VENDA (Categorias) ---
 LINKS_ACHADINHOS = {
     "Mercado Livre": "https://www.mercadolivre.com.br/social/axwelloliveira",
     "Shopee": "https://collshp.com/luhveestores?view=storefront",
@@ -42,33 +48,53 @@ LINKS_ACHADINHOS = {
 }
 LINK_SHOES = "https://www.shopintegra.com.br/catalogo/luhvee-stores-shoes"
 
-# 5. INTERFACE
-nome = st.text_input("Nome do Produto")
+# --- 5. INTERFACE DE USUÁRIO ---
+st.markdown("### 📝 Informações do Produto")
+nome = st.text_input("Nome do Produto/Achadinho")
 preco = st.text_input("Preço (R$)")
-detalhes = st.text_area("Detalhes")
+detalhes = st.text_area("Destaques (Ex: Retira até os mais difíceis)")
 
+st.markdown("### 🔗 Selecione onde Postar")
 selecionados = []
+
+# Divisão por categorias solicitada
 st.write("**🎁 Achadinhos**")
-c1, c2, c3 = st.columns(3)
-with c1: 
+col1, col2, col3 = st.columns(3)
+with col1:
     if st.checkbox("Mercado Livre"): selecionados.append(("🔹 Mercado Livre", LINKS_ACHADINHOS["Mercado Livre"]))
-with c2: 
+with col2:
     if st.checkbox("Shopee"): selecionados.append(("🔸 Shopee", LINKS_ACHADINHOS["Shopee"]))
-with c3: 
+with col3:
     if st.checkbox("Shein"): selecionados.append(("👠 Shein", LINKS_ACHADINHOS["Shein"]))
 
+st.write("**👟 Especializado**")
+col4, col5 = st.columns(2)
+with col4:
+    if st.checkbox("Shoes (Shopintegra)"): selecionados.append(("👟 Luhvee Shoes", LINK_SHOES))
+with col5:
+    if st.checkbox("Hub de Links"): selecionados.append(("🌐 Todos os Links", HUB_LINKS))
+
+# --- 6. GERAÇÃO DA MENSAGEM ---
 if st.button("🚀 GERAR MENSAGEM COMPLETA"):
     if nome and preco:
-        with st.spinner('Gerando copy...'):
+        with st.spinner('Gerando copy persuasiva...'):
             try:
-                prompt = f"Crie uma copy curta para {nome} por R$ {preco}. Detalhes: {detalhes}"
+                prompt = f"Atue como vendedor da Luhvee Stores. Crie uma copy curta e urgente para: {nome}. Preço: R$ {preco}. Gatilhos: Escassez e Urgência. Detalhes: {detalhes}"
                 response = model.generate_content(prompt)
                 
                 bloco_links = "\n\n📌 **ADQUIRA AQUI:**\n"
                 for label, url in selecionados:
                     bloco_links += f"{label}: {url}\n"
                 
-                rodape = f"\n---\n🔥 **GRUPO VIP:** {GRUPO_VIP}\n📱 **WhatsApp:** {WHATSAPP}\n📸 **Instagram:** {INSTAGRAM}"
-                st.text_area("Resultado:", response.text + bloco_links + rodape, height=400)
+                rodape = f"""
+---
+🔥 **PARTICIPE DO GRUPO VIP:** {GRUPO_VIP}
+📱 **WhatsApp:** {WHATSAPP}
+📸 **Instagram:** {INSTAGRAM}
+"""
+                st.success("Tudo pronto!")
+                st.text_area("Copie e poste:", response.text + bloco_links + rodape, height=450)
             except Exception as e:
                 st.error(f"Erro ao gerar: {e}")
+    else:
+        st.warning("Preencha o nome e o preço!")
