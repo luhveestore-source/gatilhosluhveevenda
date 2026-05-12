@@ -1,7 +1,7 @@
 import streamlit as st
 import google.generativeai as genai
 
-# --- 1. IDENTIDADE VISUAL (Documentação: Estilo Luhvees) ---
+# --- 1. IDENTIDADE VISUAL (Luhvees) ---
 st.set_page_config(page_title="Luhvee Stores Pro", layout="centered")
 
 st.markdown("""
@@ -21,13 +21,13 @@ st.markdown("""
     </div>
     """, unsafe_allow_html=True)
 
-# --- 2. CONFIGURAÇÃO DA IA (Instruções: Segurança via Secrets) ---
+# --- 2. CONFIGURAÇÃO DA IA (Segurança via Secrets) ---
+# Explicação: Este bloco tenta buscar sua chave no painel do Streamlit.
 try:
-    # Este comando busca a chave que você salvou no painel do Streamlit
     api_key = st.secrets["GEMINI_API_KEY"]
     genai.configure(api_key=api_key)
     
-    # Busca automática do modelo disponível para evitar erros
+    # Busca automática do modelo disponível para evitar erros 404
     models = [m.name for m in genai.list_models() if 'generateContent' in m.supported_generation_methods]
     model_name = 'models/gemini-1.5-flash' if 'models/gemini-1.5-flash' in models else models[0]
     model = genai.GenerativeModel(model_name)
@@ -51,7 +51,7 @@ LINK_SHOES = "https://www.shopintegra.com.br/catalogo/luhvee-stores-shoes"
 st.markdown("### 📝 Informações do Produto")
 nome = st.text_input("Nome do Produto/Achadinho")
 preco = st.text_input("Preço (R$)")
-detalhes = st.text_area("Destaques (Gatilhos extras)")
+detalhes = st.text_area("Destaques (Ex: Frete grátis, última chance)")
 
 st.markdown("### 🔗 Selecione os Links")
 selecionados = []
@@ -71,9 +71,9 @@ if st.checkbox("Luhvee Shoes"): selecionados.append(("👟 Luhvee Shoes", LINK_S
 # --- 6. GERAÇÃO DA MENSAGEM ---
 if st.button("🚀 GERAR MENSAGEM COMPLETA"):
     if nome and preco:
-        with st.spinner('Gerando copy persuasiva...'):
+        with st.spinner('A IA está preparando sua oferta...'):
             try:
-                prompt = f"Atue como vendedor da Luhvee Stores. Crie uma copy curta e urgente para: {nome}. Preço: R$ {preco}. Detalhes: {detalhes}."
+                prompt = f"Atue como vendedor da Luhvee Stores. Crie uma copy curta para vender: {nome}. Preço: R$ {preco}. Detalhes: {detalhes}"
                 response = model.generate_content(prompt)
                 
                 bloco_links = "\n\n📌 **ADQUIRA AQUI:**\n"
@@ -81,6 +81,7 @@ if st.button("🚀 GERAR MENSAGEM COMPLETA"):
                     bloco_links += f"{label}: {url}\n"
                 
                 rodape = f"\n---\n🔥 **GRUPO VIP:** {GRUPO_VIP}\n📱 **WhatsApp:** {WHATSAPP}\n📸 **Instagram:** {INSTAGRAM}"
-                st.text_area("Resultado Final:", response.text + bloco_links + rodape, height=400)
+                st.success("Tudo pronto!")
+                st.text_area("Resultado Final:", response.text + bloco_links + rodape, height=450)
             except Exception as e:
                 st.error(f"Erro ao gerar conteúdo: {e}")
