@@ -34,8 +34,8 @@ LINKS = {
     "Instagram": "@luhveestore"
 }
 
-# --- 4. NAVEGAÇÃO LATERAL ---
-aba = st.sidebar.radio("Selecione o que postar:", ["👠 Calçados (Shoes)", "🎁 Achadinhos", "💬 Mensagens de Grupo", "🏠 Minha Loja"])
+# --- 4. NAVEGAÇÃO LATERAL (Apenas as 3 abas principais) ---
+aba = st.sidebar.radio("Selecione o que postar:", ["👠 Calçados (Shoes)", "🎁 Achadinhos", "💬 Mensagens de Grupo"])
 
 # --- PILAR 1: CALÇADOS (Foco em Quebra de Objeções) ---
 if aba == "👠 Calçados (Shoes)":
@@ -112,48 +112,36 @@ elif aba == "🎁 Achadinhos":
         else:
             st.warning("Preencha o produto e o preço.")
 
-# --- PILAR 3: MENSAGENS DE GRUPO (Manhã, Tarde e Noite JUNTOS) ---
+# --- PILAR 3: MENSAGENS DE GRUPO (Combo Motivacional de Todos os Períodos) ---
 elif aba == "💬 Mensagens de Grupo":
     st.subheader("💬 Máquina de Engajamento - Mensagens do Dia")
-    contexto_extra = st.text_input("Gatilho ou Tema do Dia:", placeholder="Ex: Sabadou com a Shopee, friozinho gostoso, novidades chegando...")
+    contexto_extra = st.text_input("Gatilho ou Tema do Dia:", placeholder="Ex: Sabadou com a Shopee, friozinho gostoso, início de mês...")
 
     if st.button("🚀 GERAR TODAS AS MENSAGENS DO DIA"):
-        with st.spinner("IA criando o combo de saudações com Neurocopy..."):
+        with st.spinner("IA criando o combo de saudações motivacionais..."):
             tema = contexto_extra if contexto_extra else "um dia abençoado e cheio de mimos"
             prompt_grupo = f"""
             Atue como copywriter especialista em Neuromarketing e Engajamento de Comunidades para a marca 'Luhvees'.
-            Crie 3 mensagens de grupo independentes, muito curtas, diretas e motivacionais baseadas no tema: '{tema}'.
+            Crie 3 mensagens de grupo independentes, muito simples, curtas e altamente MOTIVACIONAIS baseadas no tema: '{tema}'.
             
-            Regras de Neurocopy e Conversão:
-            - Use o gatilho de Pertencimento (fazer com que se sintam em um clube VIP).
-            - Texto super limpo, carinhoso, objetivo e sem enrolação.
-            - Coloque a marcação '@todos' visível e destacada em cada mensagem.
+            Regras de Neurocopy, Conexão e Praticidade:
+            - Use o gatilho de Pertencimento (fazer com que se sintam acolhidas em um clube VIP).
+            - Mensagens muito diretas, limpas, doces e sem NENHUMA enrolação ou textão cansativo.
+            - Coloque obrigatoriamente a marcação '@todos' bem visível e destacada em cada mensagem para chamar a atenção de todos no grupo.
             
             Formate a saída EXATAMENTE com essa estrutura abaixo:
             
             🌞 **MENSAGEM DE BOM DIA (MANHÃ):**
-            [Saudação alegre 'Bom dia, Luhvees! ✨' + texto motivacional curto incluindo o tema + chamada leve para ver mimos + @todos]
+            [Saudação super animada 'Bom dia, Luhvees! ✨' + Frase motivacional bem simples, curta e forte incluindo o tema + Convite leve para dar uma olhadinha no grupo hoje + @todos]
             
             🌆 **MENSAGEM DE BOA TARDE (TARDE):**
-            [Saudação de tarde + lembrete rápido focado em dar uma espiadinha nos achadinhos + @todos]
+            [Saudação carinhosa de tarde + Mensagem rápida de incentivo e energia para o resto do dia + Lembrete rápido dos mimos + @todos]
             
             🌙 **MENSAGEM DE BOA NOITE (NOITE):**
-            [Agradecimento carinhoso pelo dia + desejo de bom descanso + aviso de que amanhã tem mais + @todos]
+            [Mensagem fofa de encerramento do dia + Palavra de gratidão, descanso e motivação para renovar as energias + @todos]
             """
             response = model.generate_content(prompt_grupo)
             
             rodapie_grupo = f"\n\n🛍️ **LINKS RÁPIDOS PARA COMPRAR HOJE:**\n🌐 Nosso Hub Oficial: {LINKS['Hub']}\n👟 Catálogo Shoes: {LINKS['Shopintegra']}\n🎁 Achadinhos Shopee: {LINKS['Shopee']}"
             
             st.text_area("Mensagens Prontas (Manhã, Tarde e Noite):", f"{response.text}{rodapie_grupo}", height=600)
-
-# --- PILAR 4: MINHA LOJA ---
-else:
-    st.subheader("🏠 Postagem: Minha Loja")
-    item_loja = st.text_input("Produto da Loja")
-    vlr_loja = st.text_input("Valor")
-    
-    if st.button("🚀 GERAR POST DA LOJA"):
-        with st.spinner("Gerando copy com gatilho de exclusividade..."):
-            prompt_loja = f"Use neurocopy de luxo e exclusividade para vender {item_loja} por {vlr_loja} no site próprio da marca Luhvees. Gere desejo de marca própria."
-            res_loja = model.generate_content(prompt_loja)
-            st.text_area("Copy da Loja:", f"{res_loja.text}\n\n🌐 SITE OFICIAL: {LINKS['Hub']}\n📱 Suporte WhatsApp: {LINKS['WhatsApp']}", height=400)
