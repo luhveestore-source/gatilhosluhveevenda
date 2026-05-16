@@ -112,31 +112,39 @@ elif aba == "🎁 Achadinhos":
         else:
             st.warning("Preencha o produto e o preço.")
 
-# --- PILAR 3: MENSAGENS DE GRUPO (Pertencimento e Conexão) ---
+# --- PILAR 3: MENSAGENS DE GRUPO (Manhã, Tarde e Noite JUNTOS) ---
 elif aba == "💬 Mensagens de Grupo":
-    st.subheader("💬 Mensagens de Engajamento para Grupo")
-    periodo = st.selectbox("Selecione o Período:", ["Manhã (Bom dia)", "Tarde (Boa tarde)", "Noite (Boa noite)"])
-    vibe = st.selectbox("Vibe da Mensagem:", ["Motivacional Curto", "Descontraído (Sabadou / Sextou / Véspera)", "Agradecimento / Carinho"])
-    contexto_extra = st.text_input("Contexto ou dia especial? (Opcional)", placeholder="Ex: Sabadou com a Shopee, friozinho gostoso...")
+    st.subheader("💬 Máquina de Engajamento - Mensagens do Dia")
+    contexto_extra = st.text_input("Gatilho ou Tema do Dia:", placeholder="Ex: Sabadou com a Shopee, friozinho gostoso, novidades chegando...")
 
-    if st.button("🚀 GERAR SAUDAÇÃO DE GRUPO"):
-        with st.spinner("IA gerando conexão com a comunidade..."):
-            mencao = f" Usando o contexto: '{contexto_extra}'." if contexto_extra else ""
+    if st.button("🚀 GERAR TODAS AS MENSAGENS DO DIA"):
+        with st.spinner("IA criando o combo de saudações com Neurocopy..."):
+            tema = contexto_extra if contexto_extra else "um dia abençoado e cheio de mimos"
             prompt_grupo = f"""
-            Crie uma saudação curta, afetiva e altamente magnética para o grupo de clientes fiéis da 'Luhvees'.
-            A mensagem deve ser para o período da {periodo} com a vibe {vibe}.{mencao}
+            Atue como copywriter especialista em Neuromarketing e Engajamento de Comunidades para a marca 'Luhvees'.
+            Crie 3 mensagens de grupo independentes, muito curtas, diretas e motivacionais baseadas no tema: '{tema}'.
             
-            Regras de Neurocopy para Comunidades:
-            - Use o gatilho de Pertencimento (faça com que se sintam em um clube de vantagens VIP).
-            - Comece tratando-as pelo nome da marca (Ex: 'Bom dia, Luhvees! ✨').
-            - Deixe o marcador '@todos' visível para ativação de notificação.
-            - Inclua uma pílula de dopamina (uma frase motivacional rápida ou um tom divertido sobre 'garantir mimos hoje').
-            - Mantenha o texto limpo, carinhoso, simples e sem blocos gigantescos de leitura.
+            Regras de Neurocopy e Conversão:
+            - Use o gatilho de Pertencimento (fazer com que se sintam em um clube VIP).
+            - Texto super limpo, carinhoso, objetivo e sem enrolação.
+            - Coloque a marcação '@todos' visível e destacada em cada mensagem.
+            
+            Formate a saída EXATAMENTE com essa estrutura abaixo:
+            
+            🌞 **MENSAGEM DE BOM DIA (MANHÃ):**
+            [Saudação alegre 'Bom dia, Luhvees! ✨' + texto motivacional curto incluindo o tema + chamada leve para ver mimos + @todos]
+            
+            🌆 **MENSAGEM DE BOA TARDE (TARDE):**
+            [Saudação de tarde + lembrete rápido focado em dar uma espiadinha nos achadinhos + @todos]
+            
+            🌙 **MENSAGEM DE BOA NOITE (NOITE):**
+            [Agradecimento carinhoso pelo dia + desejo de bom descanso + aviso de que amanhã tem mais + @todos]
             """
             response = model.generate_content(prompt_grupo)
             
-            rodapie_grupo = f"\n\n🛍️ **LINKS DE HOJE:**\n🌐 Acesse nosso Hub: {LINKS['Hub']}\n👟 Catálogo Shoes: {LINKS['Shopintegra']}"
-            st.text_area("Mensagem Pronta para o Grupo:", f"{response.text}{rodapie_grupo}", height=400)
+            rodapie_grupo = f"\n\n🛍️ **LINKS RÁPIDOS PARA COMPRAR HOJE:**\n🌐 Nosso Hub Oficial: {LINKS['Hub']}\n👟 Catálogo Shoes: {LINKS['Shopintegra']}\n🎁 Achadinhos Shopee: {LINKS['Shopee']}"
+            
+            st.text_area("Mensagens Prontas (Manhã, Tarde e Noite):", f"{response.text}{rodapie_grupo}", height=600)
 
 # --- PILAR 4: MINHA LOJA ---
 else:
