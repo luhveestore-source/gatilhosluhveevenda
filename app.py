@@ -1,99 +1,151 @@
 import streamlit as st
 import google.generativeai as genai
 
-# --- 1. IDENTIDADE VISUAL (Luhvee Stores) ---
-st.set_page_config(page_title="Luhvee Stores Pro", layout="centered")
+# --- 1. IDENTIDADE VISUAL (Estilo Luhvee Stores) ---
+st.set_page_config(page_title="Central Luhvees Pro", layout="wide")
 
 st.markdown("""
     <style>
-    .header-luhvee {
-        background: linear-gradient(90deg, #8e2de2, #4a00e0);
-        padding: 25px; border-radius: 15px; color: white; text-align: center; margin-bottom: 20px;
-    }
-    .stButton>button {
-        width: 100%; border-radius: 10px; background: linear-gradient(45deg, #6a11cb, #2575fc);
-        color: white; font-weight: bold;
-    }
+    .stApp { background-color: #000000; color: #ffffff; }
+    h1, h2, h3 { color: #da70d6 !important; }
+    .stButton>button { background: linear-gradient(45deg, #ff69b4, #da70d6); color: white; font-weight: bold; border: none; }
     </style>
-    <div class="header-luhvee">
-        <h1>🛍️ Luhvee Stores</h1>
-        <p>Sistema de Vendas e Neuro-Copywriting</p>
-    </div>
     """, unsafe_allow_html=True)
 
-# --- 2. CONFIGURAÇÃO DA IA (Proteção e Estabilidade) ---
+# --- 2. CONFIGURAÇÃO DA IA (Segurança via Secrets) ---
 try:
-    # Busca a chave nos Secrets do Streamlit Cloud
     api_key = st.secrets["GEMINI_API_KEY"]
     genai.configure(api_key=api_key)
-    
-    # Método educativo: Listamos os modelos e pegamos o primeiro que suporta geração
     available_models = [m.name for m in genai.list_models() if 'generateContent' in m.supported_generation_methods]
-    
-    # Seleção automática para evitar erro 404
     model_name = 'models/gemini-1.5-flash' if 'models/gemini-1.5-flash' in available_models else available_models[0]
     model = genai.GenerativeModel(model_name)
 except Exception as e:
-    st.error("Erro: Verifique se a 'GEMINI_API_KEY' está salva corretamente nos Secrets do Streamlit.")
+    st.error(f"Erro na conexão com a IA: {e}")
+    st.stop()
 
-# --- 3. LINKS INEGOCIÁVEIS (Contatos Oficiais) ---
-WHATSAPP = "https://wa.me/5511948021428"
-INSTAGRAM = "https://instagram.com/luhveestore"
-GRUPO_VIP = "https://chat.whatsapp.com/IBneTrHJemMLla4wzU8Wbj"
-HUB_LINKS = "https://links-luhveestore.streamlit.app/"
-
-# --- 4. LINKS DE VENDA (Categorias Organizadas) ---
-LINKS_ACHADINHOS = {
-    "Mercado Livre": "https://www.mercadolivre.com.br/social/axwelloliveira",
+# --- 3. BANCO DE LINKS OFICIAIS LUHVEES ---
+LINKS = {
     "Shopee": "https://collshp.com/luhveestores?view=storefront",
-    "Shein": "https://onelink.shein.com/5/5ohwd5nol825"
+    "Shein": "https://onelink.shein.com/5/5ohwd5nol825",
+    "Mercado Livre": "https://www.mercadolivre.com.br/social/axwelloliveira",
+    "Hub": "https://links-luhveestore.streamlit.app/",
+    "Shopintegra": "https://www.shopintegra.com.br/catalogo/luhvee-stores-shoes",
+    "WhatsApp": "https://wa.me/5511948021428",
+    "Instagram": "@luhveestore"
 }
-LINK_SHOES = "https://www.shopintegra.com.br/catalogo/luhvee-stores-shoes"
 
-# --- 5. INTERFACE DE USUÁRIO ---
-st.markdown("### 📝 Informações do Produto")
-nome = st.text_input("Nome do Produto/Achadinho")
-preco = st.text_input("Preço (R$)")
-detalhes = st.text_area("Destaques (Ex: Frete grátis)")
+# --- 4. NAVEGAÇÃO LATERAL ---
+aba = st.sidebar.radio("Selecione o que postar:", ["👠 Calçados (Shoes)", "🎁 Achadinhos", "💬 Mensagens de Grupo", "🏠 Minha Loja"])
 
-st.markdown("### 🔗 Selecione onde Postar")
-selecionados = []
+# --- PILAR 1: CALÇADOS (Foco em Quebra de Objeções) ---
+if aba == "👠 Calçados (Shoes)":
+    st.subheader("👟 Gerador Luhvee Shoes - Neurocopy Ativada")
+    nome_calca = st.text_input("Nome do Produto / REF.")
+    valor_calca = st.text_input("Preço (R$)")
+    desc_calca = st.text_area("Descrição Técnica (Cole aqui os detalhes de material, solado, etc.)")
 
-# Seção Achadinhos
-st.write("**🎁 Achadinhos**")
-col1, col2, col3 = st.columns(3)
-with col1:
-    if st.checkbox("Mercado Livre"): selecionados.append(("🔹 Mercado Livre", LINKS_ACHADINHOS["Mercado Livre"]))
-with col2:
-    if st.checkbox("Shopee"): selecionados.append(("🔸 Shopee", LINKS_ACHADINHOS["Shopee"]))
-with col3:
-    if st.checkbox("Shein"): selecionados.append(("👠 Shein", LINKS_ACHADINHOS["Shein"]))
+    if st.button("🚀 GERAR POST DE CALÇADOS"):
+        if nome_calca and valor_calca:
+            copy_shoes = f"""😤 CANSADO DE PROCURAR?
 
-# Seção Especializada
-st.write("**👟 Especializado**")
-col4, col5 = st.columns(2)
-with col4:
-    if st.checkbox("Shoes (Shopintegra)"): selecionados.append(("👟 Luhvee Shoes", LINK_SHOES))
-with col5:
-    if st.checkbox("Hub de Links"): selecionados.append(("🌐 Todos os Links", HUB_LINKS))
+{nome_calca.upper()} ORIGINAL está AQUI! 👈
 
-# --- 6. GERAÇÃO DA MENSAGEM FINAL ---
-if st.button("🚀 GERAR MENSAGEM COMPLETA"):
-    if nome and preco:
-        with st.spinner('A IA está preparando sua oferta...'):
-            try:
-                prompt = f"Atue como vendedor da Luhvee Stores. Crie uma copy curta para: {nome}. Preço: R$ {preco}. Detalhes: {detalhes}. Use gatilhos de urgência."
+Sem fake, sem enganação! ✅
+
+{desc_calca}
+
+💰 R$ {valor_calca}
+
+Fim da busca! 🎉
+
+🛒 COMPRE AGORA:
+🏪 Catálogo: {LINKS['Shopintegra']}
+
+💬 WhatsApp: {LINKS['WhatsApp']}
+
+💳 Formas de Pagamento:
+✅ Cartão de Crédito
+✅ Link de Pagamento
+✅ PIX
+
+📲 Instagram: {LINKS['Instagram']}
+🔗 Mais Links: {LINKS['Hub']}"""
+            st.text_area("Pronto para copiar:", copy_shoes, height=450)
+        else:
+            st.warning("Preencha o Nome e o Valor.")
+
+# --- PILAR 2: ACHADINHOS (Neurocopy de Resposta Rápida) ---
+elif aba == "🎁 Achadinhos":
+    st.subheader("🎁 Gerador de Achadinhos Sem Rodeios")
+    prod_achado = st.text_input("Nome do Produto")
+    preco_achado = st.text_input("Preço")
+    loja = st.selectbox("Escolha a Loja:", ["Shopee", "Shein", "Mercado Livre"])
+
+    if st.button("🚀 GERAR MENSAGENS"):
+        if prod_achado and preco_achado:
+            with st.spinner("IA aplicando gatilhos subconscientes de compra..."):
+                prompt = f"""
+                Atue como copywriter especialista em Neuromarketing e Neurocopy para e-commerce.
+                Crie textos EXTREMAMENTE CURTOS, DIRETOS E SEM ENROLAÇÃO para: {prod_achado} por R$ {preco_achado}.
+                
+                Use gatilhos de:
+                - Curiosidade (fazer a pessoa querer clicar para ver)
+                - Ganho de oportunidade (preço exclusivo ou achado imperdível)
+                - Escassez implícita (agir rápido)
+                
+                Forneça o texto final pronto estruturado assim:
+                
+                📸 **INSTAGRAM:**
+                [Texto curto, focado no desejo visual e estético do produto + Emojis]
+                
+                💬 **WHATSAPP / TELEGRAM:**
+                [Mensagem rápida de um clique, gerando urgência de estoque]
+                
+                📱 **STATUS / STORIES:**
+                [Uma frase matadora de no máximo 2 linhas para gerar o clique por impulso]
+                """
                 response = model.generate_content(prompt)
                 
-                bloco_links = "\n\n📌 **ADQUIRA AQUI:**\n"
-                for label, url in selecionados:
-                    bloco_links += f"{label}: {url}\n"
+                rodapie_links = f"\n\n🛒 **LINK PARA COMPRAR:**\n🔗 {LINKS[loja]}\n\n🌐 **VEJA TODOS OS ACHADINHOS:**\n👉 {LINKS['Hub']}\n\n🔥 **ENTRE NO GRUPO VIP:**\n📱 {LINKS['WhatsApp']}"
                 
-                rodape = f"\n---\n🔥 **GRUPO VIP:** {GRUPO_VIP}\n📱 **WhatsApp:** {WHATSAPP}\n📸 **Instagram:** {INSTAGRAM}"
-                
-                st.success("Tudo pronto!")
-                st.text_area("Resultado:", response.text + bloco_links + rodape, height=450)
-            except Exception as e:
-                st.error(f"Erro ao gerar conteúdo: {e}")
-    else:
-        st.warning("Preencha o nome e o preço!")
+                st.text_area("Copies com Alta Conversão:", f"{response.text}{rodapie_links}", height=500)
+        else:
+            st.warning("Preencha o produto e o preço.")
+
+# --- PILAR 3: MENSAGENS DE GRUPO (Pertencimento e Conexão) ---
+elif aba == "💬 Mensagens de Grupo":
+    st.subheader("💬 Mensagens de Engajamento para Grupo")
+    periodo = st.selectbox("Selecione o Período:", ["Manhã (Bom dia)", "Tarde (Boa tarde)", "Noite (Boa noite)"])
+    vibe = st.selectbox("Vibe da Mensagem:", ["Motivacional Curto", "Descontraído (Sabadou / Sextou / Véspera)", "Agradecimento / Carinho"])
+    contexto_extra = st.text_input("Contexto ou dia especial? (Opcional)", placeholder="Ex: Sabadou com a Shopee, friozinho gostoso...")
+
+    if st.button("🚀 GERAR SAUDAÇÃO DE GRUPO"):
+        with st.spinner("IA gerando conexão com a comunidade..."):
+            mencao = f" Usando o contexto: '{contexto_extra}'." if contexto_extra else ""
+            prompt_grupo = f"""
+            Crie uma saudação curta, afetiva e altamente magnética para o grupo de clientes fiéis da 'Luhvees'.
+            A mensagem deve ser para o período da {periodo} com a vibe {vibe}.{mencao}
+            
+            Regras de Neurocopy para Comunidades:
+            - Use o gatilho de Pertencimento (faça com que se sintam em um clube de vantagens VIP).
+            - Comece tratando-as pelo nome da marca (Ex: 'Bom dia, Luhvees! ✨').
+            - Deixe o marcador '@todos' visível para ativação de notificação.
+            - Inclua uma pílula de dopamina (uma frase motivacional rápida ou um tom divertido sobre 'garantir mimos hoje').
+            - Mantenha o texto limpo, carinhoso, simples e sem blocos gigantescos de leitura.
+            """
+            response = model.generate_content(prompt_grupo)
+            
+            rodapie_grupo = f"\n\n🛍️ **LINKS DE HOJE:**\n🌐 Acesse nosso Hub: {LINKS['Hub']}\n👟 Catálogo Shoes: {LINKS['Shopintegra']}"
+            st.text_area("Mensagem Pronta para o Grupo:", f"{response.text}{rodapie_grupo}", height=400)
+
+# --- PILAR 4: MINHA LOJA ---
+else:
+    st.subheader("🏠 Postagem: Minha Loja")
+    item_loja = st.text_input("Produto da Loja")
+    vlr_loja = st.text_input("Valor")
+    
+    if st.button("🚀 GERAR POST DA LOJA"):
+        with st.spinner("Gerando copy com gatilho de exclusividade..."):
+            prompt_loja = f"Use neurocopy de luxo e exclusividade para vender {item_loja} por {vlr_loja} no site próprio da marca Luhvees. Gere desejo de marca própria."
+            res_loja = model.generate_content(prompt_loja)
+            st.text_area("Copy da Loja:", f"{res_loja.text}\n\n🌐 SITE OFICIAL: {LINKS['Hub']}\n📱 Suporte WhatsApp: {LINKS['WhatsApp']}", height=400)
