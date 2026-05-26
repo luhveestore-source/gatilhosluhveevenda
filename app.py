@@ -34,10 +34,10 @@ LINKS = {
     "Instagram": "@luhveestore"
 }
 
-# --- 4. NAVEGAÇÃO LATERAL (Apenas as 3 abas principais) ---
+# --- 4. NAVEGAÇÃO LATERAL (Apenas as 3 abas desejadas) ---
 aba = st.sidebar.radio("Selecione o que postar:", ["👠 Calçados (Shoes)", "🎁 Achadinhos", "💬 Mensagens de Grupo"])
 
-# --- PILAR 1: CALÇADOS (Foco em Quebra de Objeções) ---
+# --- PILAR 1: CALÇADOS ---
 if aba == "👠 Calçados (Shoes)":
     st.subheader("👟 Gerador Luhvee Shoes - Neurocopy Ativada")
     nome_calca = st.text_input("Nome do Produto / REF.")
@@ -74,7 +74,7 @@ Fim da busca! 🎉
         else:
             st.warning("Preencha o Nome e o Valor.")
 
-# --- PILAR 2: ACHADINHOS (Neurocopy de Resposta Rápida) ---
+# --- PILAR 2: ACHADINHOS ---
 elif aba == "🎁 Achadinhos":
     st.subheader("🎁 Gerador de Achadinhos Sem Rodeios")
     prod_achado = st.text_input("Nome do Produto")
@@ -112,36 +112,59 @@ elif aba == "🎁 Achadinhos":
         else:
             st.warning("Preencha o produto e o preço.")
 
-# --- PILAR 3: MENSAGENS DE GRUPO (Combo Motivacional de Todos os Períodos) ---
+# --- PILAR 3: MENSAGENS DE GRUPO (Design Premium & Motivacional) ---
 elif aba == "💬 Mensagens de Grupo":
-    st.subheader("💬 Máquina de Engajamento - Mensagens do Dia")
-    contexto_extra = st.text_input("Gatilho ou Tema do Dia:", placeholder="Ex: Sabadou com a Shopee, friozinho gostoso, início de mês...")
+    st.subheader("💬 Máquina de Engajamento - Mensagens Premium")
+    
+    # Nova função para você escolher qual link padrão vai querer embutido na mensagem
+    link_destino = st.selectbox("Escolha para onde mandar o cliente nessa mensagem:", ["Shopee", "Shein", "Mercado Livre", "Hub", "Shopintegra"])
+    contexto_extra = st.text_input("Tema de Motivação do Dia:", placeholder="Ex: Foco no sucesso, Sabadou de conquistas, Superar limites...")
 
-    if st.button("🚀 GERAR TODAS AS MENSAGENS DO DIA"):
-        with st.spinner("IA criando o combo de saudações motivacionais..."):
-            tema = contexto_extra if contexto_extra else "um dia abençoado e cheio de mimos"
+    if st.button("🚀 GERAR COMBO DE MENSAGENS ESTILIZADAS"):
+        with st.spinner("IA aplicando design visual de alta conversão..."):
+            tema = contexto_extra if contexto_extra else "paz, conquistas e muito amor próprio"
+            link_selecionado = LINKS[link_destino]
+
             prompt_grupo = f"""
-            Atue como copywriter especialista em Neuromarketing e Engajamento de Comunidades para a marca 'Luhvees'.
-            Crie 3 mensagens de grupo independentes, muito simples, curtas e altamente MOTIVACIONAIS baseadas no tema: '{tema}'.
+            Atue como copywriter especialista em Neuromarketing e Design de Mensagens para WhatsApp.
+            Crie 3 blocos de mensagens separados (MANHÃ, TARDE, NOITE). Elas devem ser curtas, altamente MOTIVACIONAIS baseadas no tema: '{tema}'.
             
-            Regras de Neurocopy, Conexão e Praticidade:
-            - Use o gatilho de Pertencimento (fazer com que se sintam acolhidas em um clube VIP).
-            - Mensagens muito diretas, limpas, doces e sem NENHUMA enrolação ou textão cansativo.
-            - Coloque obrigatoriamente a marcação '@todos' bem visível e destacada em cada mensagem para chamar a atenção de todos no grupo.
+            Regra Crucial de Formatação Visual (Deixe idêntico a um catálogo elegante de vendas):
+            - Use títulos principais em CAIXA ALTA acompanhados de emojis temáticos fortes.
+            - Apresente os benefícios motivacionais ou listas usando tópicos limpos com o marcador '✨' ou '✔️'.
+            - Deixe espaçamentos organizados (pule linhas entre blocos para não virar textão).
+            - Insira de forma muito natural a chamada de urgência/escassez no final do texto (ex: '🔥 Oportunidades exclusivas aguardando você!', '⚠️ Estoque atualizado por tempo limitado!').
+            - O marcador '@todos' deve ficar isolado e bem visível no final de cada período.
             
-            Formate a saída EXATAMENTE com essa estrutura abaixo:
+            Retorne EXATAMENTE esta estrutura para que eu mostre na tela:
             
             🌞 **MENSAGEM DE BOM DIA (MANHÃ):**
-            [Saudação super animada 'Bom dia, Luhvees! ✨' + Frase motivacional bem simples, curta e forte incluindo o tema + Convite leve para dar uma olhadinha no grupo hoje + @todos]
+            [Título em Caixa Alta com Emoji]
+            [Mensagem motivacional curta sobre o tema]
+            ✨ Mensagem de inspiração 1
+            ✨ Mensagem de inspiração 2
+            🔥 Mimos imperdíveis prontos para você!
+            👉 Link para acessar: {link_selecionado}
+            @todos
             
             🌆 **MENSAGEM DE BOA TARDE (TARDE):**
-            [Saudação carinhosa de tarde + Mensagem rápida de incentivo e energia para o resto do dia + Lembrete rápido dos mimos + @todos]
+            [Título em Caixa Alta com Emoji]
+            [Incentivo rápido para a tarde render]
+            ✔️ Foco e energia renovada
+            ✔️ Dê uma espiadinha nas novidades de hoje
+            ⚡ Clique antes que acabe!
+            👉 Link oficial: {link_selecionado}
+            @todos
             
             🌙 **MENSAGEM DE BOA NOITE (NOITE):**
-            [Mensagem fofa de encerramento do dia + Palavra de gratidão, descanso e motivação para renovar as energias + @todos]
+            [Título em Caixa Alta com Emoji]
+            [Frase de gratidão e descanso]
+            ✨ O amanhã reserva coisas incríveis
+            🛌 Descanse com a certeza de dever cumprido
+            ❤️ Amanhã tem reposição especial!
+            👉 Veja tudo aqui: {link_selecionado}
+            @todos
             """
             response = model.generate_content(prompt_grupo)
             
-            rodapie_grupo = f"\n\n🛍️ **LINKS RÁPIDOS PARA COMPRAR HOJE:**\n🌐 Nosso Hub Oficial: {LINKS['Hub']}\n👟 Catálogo Shoes: {LINKS['Shopintegra']}\n🎁 Achadinhos Shopee: {LINKS['Shopee']}"
-            
-            st.text_area("Mensagens Prontas (Manhã, Tarde e Noite):", f"{response.text}{rodapie_grupo}", height=600)
+            st.text_area("Copie o período desejado:", response.text, height=650)
